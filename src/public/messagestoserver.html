@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Messages to Server</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url('background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+    }
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: -1;
+    }
+    .nav {
+      display: flex;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 12px 20px;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 10;
+      gap: 20px;
+      align-items: center;
+    }
+    .nav a {
+      color: #00aaff;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 16px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: background-color 0.3s;
+    }
+    .nav a:hover {
+      background-color: #008ecc;
+      color: #fff;
+    }
+    .container {
+      max-width: 600px;
+      margin: 90px auto 50px; /* add top margin to avoid nav overlap */
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #00aaff;
+    }
+    textarea, input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 16px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #00aaff;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #008ecc;
+    }
+    .message-item {
+      border-bottom: 1px solid #ccc;
+      padding: 8px 0;
+    }
+    .message-text {
+      color: #fff;
+    }
+    .timestamp {
+      color: #bbb;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+
+  <!-- Navigation bar -->
+  <nav class="nav">
+    <a href="messagestoserver.html" aria-current="page">Messages</a>
+    <a href="colorpicker.html">Color Picker</a>
+    <a href="huegrinder.html">Hue Grinder</a>
+  </nav>
+
+  <div class="container">
+    <h2>Send Message to Admin</h2>
+
+    <textarea id="messageInput" rows="5" placeholder="Type your message..."></textarea>
+    <button onclick="sendMessage()">Send Message</button>
+
+    <h3 style="margin-top: 30px;">Previous Messages</h3>
+    <div id="messagesContainer">
+      <p style="text-align: center; color: #ccc;">Loading messages...</p>
+    </div>
+  </div>
+
+  <!-- FingerprintJS Pro CDN (Free for non-commercial use) -->
+  <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
+
+  <script>
+    const API_BASE = 'https://100.101.255.110:3000/';
+    const toUser = 'admin';
+    let visitorId = '';
+
+    // Load FingerprintJS and get the visitor ID
+    FingerprintJS.load().then(fp => {
+      fp.get().then(result => {
+        visitorId = result.visitorId;
+        loadMessages();
+      });
+    });
+
+    async function getAuthToken() {
+      return localStorage.getItem('authToken');
+    }
+
+    async function getUsername() {
+      return localStorage.getItem('username') || 'anonymous';
+    }
+
+    async function sendMessage() {
+      const message = document.getElementById('messageInput').value.trim();
+      if (!message) return alert('Message cannot be empty.');
+
+      const token = await getAuthToken();
+      const username = await getUsername();
+
+      const payload = {
+        username,
+        toUser,
+        ciphertext: message,
+        deviceId: visitorId,
+      };
+
+      try {
+        const response = await fetch(API_BASE + 'messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token ? `Bearer ${token}` : '',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) throw new Error('Failed to send message');
+        alert('Message sent successfully.');
+        document.getElementById('messageInput').value = '';
+        loadMessages();
+      } catch (err) {
+        console.error(err);
+        alert('Failed to send message.');
+      }
+    }
+
+    async function loadMessages() {
+      const token = await getAuthToken();
+      const username = await getUsername();
+
+      try {
+        const response = await fetch(API_BASE + `messages/${username}`, {
+          headers: {
+            'Authorization': token ? `Bearer ${token}` : '',
+          },
+        });
+
+        if (!response.ok) throw new Error('Fetch failed');
+        const data = await response.json();
+
+        const container = document.getElementById('messagesContainer');
+        container.innerHTML = '';
+
+        if (!data.length) {
+          container.innerHTML = '<p style="text-align: center; color: #ccc;">No messages found.</p>';
+          return;
+        }
+
+        data.forEach(msg => {
+          const div = document.createElement('div');
+          div.className = 'message-item';
+          div.innerHTML = `
+            <div class="message-text">${msg.CipherText}</div>
+            <div class="timestamp">${new Date(msg.Timestamp).toLocaleString()}</div>
+          `;
+          container.appendChild(div);
+        });
+      } catch (err) {
+        console.error(err);
+        document.getElementById('messagesContainer').innerHTML =
+          '<p style="text-align: center; color: red;">Error loading messages.</p>';
+      }
+    }
+  </script>
+</body>
+</html>

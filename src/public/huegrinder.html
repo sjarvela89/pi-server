@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hue Grinder</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url('background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+    }
+    .overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0, 0, 0, 0.55);
+      z-index: -1;
+    }
+    nav {
+      display: flex;
+      gap: 20px;
+      padding: 12px 20px;
+      background-color: rgba(0,0,0,0.7);
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 10;
+    }
+    nav a {
+      color: #00aaff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a.active {
+      color: #fff;
+      text-decoration: underline;
+    }
+    main {
+      max-width: 600px;
+      margin: 90px auto 40px;
+      padding: 20px;
+      background: rgba(255 255 255 / 0.1);
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.7);
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+    .slider-container {
+      margin-bottom: 24px;
+      user-select: none;
+    }
+    input[type="range"] {
+      width: 100%;
+      -webkit-appearance: none;
+      background: transparent;
+      cursor: pointer;
+      height: 30px;
+      margin-top: 4px;
+    }
+    input[type="range"]:focus {
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 30px;
+      border-radius: 10px;
+      background: linear-gradient(to right, hsl(0, 100%, 50%), hsl(60, 100%, 50%), hsl(120, 100%, 50%), hsl(180, 100%, 50%), hsl(240, 100%, 50%), hsl(300, 100%, 50%), hsl(360, 100%, 50%));
+    }
+    input[type="range"]::-moz-range-track {
+      height: 30px;
+      border-radius: 10px;
+      background: linear-gradient(to right, hsl(0, 100%, 50%), hsl(60, 100%, 50%), hsl(120, 100%, 50%), hsl(180, 100%, 50%), hsl(240, 100%, 50%), hsl(300, 100%, 50%), hsl(360, 100%, 50%));
+    }
+    .value-label {
+      float: right;
+      font-weight: normal;
+      color: #eee;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #00aaff;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background-color: #008ecc;
+    }
+            .nav {
+      display: flex;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 12px 20px;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 10;
+      gap: 20px;
+      align-items: center;
+    }
+    .nav a {
+      color: #00aaff;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 16px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: background-color 0.3s;
+    }
+    .nav a:hover {
+      background-color: #008ecc;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+  <nav class="nav">
+    <a href="messagestoserver.html">Messages</a>
+    <a href="colorpicker.html">Color Picker</a>
+    <a href="huegrinder.html">Hue Grinder</a>
+  </nav>
+
+  <main>
+    <h1>Hue Grinder</h1>
+
+    <div class="slider-container">
+      <label for="minHue">Min Hue <span id="minHueVal" class="value-label">0</span></label>
+      <input type="range" id="minHue" min="0" max="360" value="0" />
+    </div>
+
+    <div class="slider-container">
+      <label for="maxHue">Max Hue <span id="maxHueVal" class="value-label">360</span></label>
+      <input type="range" id="maxHue" min="0" max="360" value="360" />
+    </div>
+
+    <div class="slider-container">
+      <label for="intervalMs">Interval (ms) <span id="intervalMsVal" class="value-label">500</span></label>
+      <input type="range" id="intervalMs" min="100" max="2000" step="10" value="500" />
+    </div>
+
+    <div class="slider-container">
+      <label for="step">Step <span id="stepVal" class="value-label">10</span></label>
+      <input type="range" id="step" min="1" max="100" value="10" />
+    </div>
+
+    <div class="slider-container">
+      <label for="durationMs">Duration (ms) <span id="durationMsVal" class="value-label">30000</span></label>
+      <input type="range" id="durationMs" min="1000" max="600000" step="1000" value="30000" />
+    </div>
+
+    <button id="startBtn">Start Hue Grinder</button>
+  </main>
+
+  <script>
+    const minHueInput = document.getElementById('minHue');
+    const maxHueInput = document.getElementById('maxHue');
+    const intervalInput = document.getElementById('intervalMs');
+    const stepInput = document.getElementById('step');
+    const durationInput = document.getElementById('durationMs');
+
+    const minHueVal = document.getElementById('minHueVal');
+    const maxHueVal = document.getElementById('maxHueVal');
+    const intervalVal = document.getElementById('intervalMsVal');
+    const stepVal = document.getElementById('stepVal');
+    const durationVal = document.getElementById('durationMsVal');
+
+    function updateLabels() {
+      minHueVal.textContent = minHueInput.value;
+      maxHueVal.textContent = maxHueInput.value;
+      intervalVal.textContent = intervalInput.value;
+      stepVal.textContent = stepInput.value;
+      durationVal.textContent = durationInput.value;
+    }
+
+    minHueInput.addEventListener('input', updateLabels);
+    maxHueInput.addEventListener('input', updateLabels);
+    intervalInput.addEventListener('input', updateLabels);
+    stepInput.addEventListener('input', updateLabels);
+    durationInput.addEventListener('input', updateLabels);
+
+    updateLabels();
+
+    document.getElementById('startBtn').addEventListener('click', async () => {
+      // Validate min/max hue logic:
+      const minHue = parseInt(minHueInput.value, 10);
+      const maxHue = parseInt(maxHueInput.value, 10);
+      if (minHue > maxHue) {
+        alert('Min Hue cannot be greater than Max Hue.');
+        return;
+      }
+
+      const payload = {
+        minHue,
+        maxHue,
+        intervalMs: parseInt(intervalInput.value, 10),
+        step: parseInt(stepInput.value, 10),
+        durationMs: parseInt(durationInput.value, 10),
+      };
+
+      const token = localStorage.getItem('authToken') || '';
+
+      try {
+        const res = await fetch('https://100.101.255.110:3000/hue-grinder', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token ? `Bearer ${token}` : '',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const json = await res.json();
+
+        if (res.ok) {
+          alert(json.status || 'Hue grinder started.');
+        } else {
+          alert(json.message || 'Failed to start hue grinder.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error connecting to server.');
+      }
+    });
+  </script>
+</body>
+</html>
