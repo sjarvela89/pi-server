@@ -39,6 +39,36 @@ CREATE DATABASE pidb;
 GRANT ALL PRIVILEGES ON DATABASE pidb TO piuser;
 \q
 
+Create required tables:
+
+CREATE TABLE IF NOT EXISTS BlacklistedTokens (
+  Token TEXT PRIMARY KEY,
+  ExpiryDate TIMESTAMP NOT NULL
+);
+
+
+CREATE TABLE Users (
+  Name VARCHAR(255) PRIMARY KEY,
+  PasswordHash TEXT NOT NULL,
+  Role VARCHAR(50),
+  IsMfaEnabled BOOLEAN DEFAULT FALSE,
+  MfaSecret TEXT,
+  DeviceHash TEXT
+);
+
+CREATE TABLE BlacklistedTokens (
+  Token TEXT PRIMARY KEY,
+  ExpiryDate TIMESTAMP NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Messages (
+  FromUserId VARCHAR(255),
+  ToUserId VARCHAR(255),
+  CipherText TEXT,
+  Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
 Project Setup:
 
 npm install
