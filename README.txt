@@ -48,7 +48,9 @@ curl -fsSL https://tailscale.com/install.sh | sh
 sudo tailscale up
 Visit the provided tailscale URL to authenticate your device
 
-
+Create certifications for your own Raspberry Pi by using:
+openssl req -nodes -new -x509 -keyout certs/key.pem -out certs/cert.pem -days 365
+Use your Raspberry pi Tailscale IP address in the htmlConfig.js file.
 
 Notes:
 - The app is designed to work within a VPN for a small number of users.
