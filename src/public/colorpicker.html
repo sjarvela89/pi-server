@@ -257,7 +257,8 @@
     <button id="openHueGrinderBtn">Open Hue Grinder</button>
   </main>
 
-  <script>
+  <script  type="module">
+    import API_BASE from './htmlConfig.js';
     function hsvToRgb(h, s, v) {
       s /= 100;
       v /= 100;
@@ -338,7 +339,7 @@
           on: lampSwitch.checked
         };
 
-        const res = await fetch('https://100.101.255.110:3000/colors', {
+        const res = await fetch(API_BASE+'colors', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -367,7 +368,7 @@
       try {
         const token = localStorage.getItem('authToken') || '';
         console.log('token was: ', token);
-        const res = await fetch('https://100.101.255.110:3000/colors', {
+        const res = await fetch(API_BASE+'colors', {
           headers: {
             'Authorization': token ? `Bearer ${token}` : '',
           },

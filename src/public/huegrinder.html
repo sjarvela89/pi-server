@@ -158,7 +158,8 @@
     <button id="startBtn">Start Hue Grinder</button>
   </main>
 
-  <script>
+  <script type="module">
+    import API_BASE from './htmlConfig.js';
     const minHueInput = document.getElementById('minHue');
     const maxHueInput = document.getElementById('maxHue');
     const intervalInput = document.getElementById('intervalMs');
@@ -207,7 +208,7 @@
       const token = localStorage.getItem('authToken') || '';
 
       try {
-        const res = await fetch('https://100.101.255.110:3000/hue-grinder', {
+        const res = await fetch(API_BASE+'hue-grinder', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

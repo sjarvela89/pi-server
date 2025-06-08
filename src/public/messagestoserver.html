@@ -116,8 +116,8 @@
   <!-- FingerprintJS Pro CDN (Free for non-commercial use) -->
   <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
 
-  <script>
-    const API_BASE = 'https://100.101.255.110:3000/';
+  <script type="module">
+    import API_BASE from './htmlConfig.js';
     const toUser = 'admin';
     let visitorId = '';
 
