@@ -11,6 +11,8 @@ This project is built to run on a Raspberry Pi Model B Rev 2 with the following 
 - BogoMIPS: 697.95
 
 The project uses Node.js v10.24.1 and npm v6.14.12.
+Operating system is Raspberry PI OS LITE (32-BIT)
+
 
 System Setup Instructions
 	Update and upgrade system packages:
