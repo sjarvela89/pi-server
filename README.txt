@@ -1,3 +1,4 @@
+TP-Link light bulb controlling app with internal messages.
 This project is built to run on a Raspberry Pi Model B Rev 2 with the following hardware specs:
 
 - Processor: ARMv6-compatible processor rev 7 (v6l)
