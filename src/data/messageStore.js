@@ -16,7 +16,7 @@ const { db } = require('../db'); // Make sure your db.js exports a configured pg
  */
 async function insertMessage(message) {
   const query = `
-    INSERT INTO "Messages" ("FromUserId", "ToUserId", "CipherText", "Timestamp")
+    INSERT INTO "messages" ("fromuserid", "touserid", "ciphertext", "timestamp")
     VALUES ($1, $2, $3, $4)
   `;
 
@@ -37,19 +37,19 @@ async function insertMessage(message) {
  */
 async function getMessagesForUser(userId) {
   const query = `
-    SELECT "FromUserId", "ToUserId", "CipherText", "Timestamp"
-    FROM "Messages"
-    WHERE "FromUserId" = $1
-    ORDER BY "Timestamp" DESC
+    SELECT "fromuserid", "touserid", "ciphertext", "timestamp"
+    FROM "messages"
+    WHERE "fromuserid" = $1
+    ORDER BY "timestamp" DESC
   `;
 
   const result = await db.query(query, [userId]);
 
   return result.rows.map(row => ({
-    FromUserId: row.FromUserId,
-    ToUserId: row.ToUserId,
-    CipherText: row.CipherText,
-    Timestamp: row.Timestamp
+    FromUserId: row.fromuserid,
+    ToUserId: row.touserid,
+    CipherText: row.ciphertext,
+    Timestamp: row.timestamp
   }));
 }
 

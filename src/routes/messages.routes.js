@@ -21,6 +21,7 @@ const pool = new Pool({
 });
 
 router.post('/messages', verifyToken, async function (req, res) {
+  console.log('Messages post backend reached');
   try {
     notifier.notify({
       title: 'New Message Received',
@@ -47,6 +48,7 @@ router.post('/messages', verifyToken, async function (req, res) {
 });
 
 router.get('/messages/:username', verifyToken, async function (req, res) {
+  console.log('Messages get backend reached');
   try {
     const username = req.params.username;
 
