@@ -29,14 +29,6 @@ jobs:
         echo "Trying icacls version..."
         icacls /?
 
-    - name: Set up SSH key in safe folder
-      shell: powershell
-      run: |
-        $sshPath = "C:\actions-runner\.ssh"
-        mkdir $sshPath -Force
-        Set-Content -Path "$sshPath\id_ed25519" -Value "${{ secrets.SSH_PRIVATE_KEY }}" -NoNewline
-        icacls $sshPath\id_ed25519 /inheritance:r
-        icacls $sshPath\id_ed25519 /grant:r "$($env:USERNAME):(R)"
 
     - name: Copy SSH key to WSL and fix permissions 1
       shell: powershell
