@@ -35,6 +35,11 @@ jobs:
       run: |
         wsl bash -c "mkdir -p ~/.ssh && cp /mnt/c/actions-runner/.ssh/id_ed25519 ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519"
 
+    - name: Disconnect mapped drive if exists
+      shell: powershell
+      run: |
+        net use Y: /delete /y
+
     - name: Map network drive to Raspberry Pi
       shell: powershell
       run: |
