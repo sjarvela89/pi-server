@@ -1,4 +1,4 @@
-ame: Deploy to Raspberry Pi (No Git)
+name: Deploy to Raspberry Pi (No Git)
 
 on:
   push:
