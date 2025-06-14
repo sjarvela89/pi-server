@@ -35,10 +35,15 @@ jobs:
       run: |
         wsl bash -c "mkdir -p ~/.ssh && cp /mnt/c/actions-runner/.ssh/id_ed25519 ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519"
 
-    - name: Deploy files with rsync
+    - name: Map network drive to Raspberry Pi
       shell: powershell
       run: |
-        wsl rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no -i /mnt/c/actions-runner/.ssh/id_ed25519" ./ sjarv@100.101.255.110:/home/pi/pi-server/
+        net use Z: \\100.101.255.110\pi-server /user:sjarv ${{ secrets.PI_SMB_PASSWORD }}
+
+    - name: Deploy files using robocopy
+      shell: powershell
+      run: |
+        robocopy "$env:GITHUB_WORKSPACE" Z:\ /MIR /XD .git .github
 
     - name: Restart server on Raspberry Pi
       shell: powershell
