@@ -1,4 +1,4 @@
-name: Deploy to Raspberry Pi (No Git)
+ame: Deploy to Raspberry Pi (No Git)
 
 on:
   push:
@@ -12,19 +12,22 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Install SSH key
+    - name: Set up SSH key (Windows compatible)
+      shell: powershell
       run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.PI_SSH_KEY }}" > ~/.ssh/id_ed25519
-        chmod 600 ~/.ssh/id_ed25519
+        mkdir $env:USERPROFILE\.ssh -Force
+        Set-Content -Path $env:USERPROFILE\.ssh\id_ed25519 -Value "${{ secrets.SSH_PRIVATE_KEY }}" -NoNewline
+        & icacls "$env:USERPROFILE\.ssh\id_ed25519" /inheritance:r /grant:r "$env:USERNAME:F"
 
     - name: Deploy files with rsync
+      shell: powershell
       run: |
-        rsync -avz --delete \
-          -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519" \
+        rsync -avz --delete `
+          -e "ssh -o StrictHostKeyChecking=no -i $env:USERPROFILE\.ssh\id_ed25519" `
           ./ sjarv@100.101.255.110:/home/pi/pi-server/
 
-    - name: Restart server on Pi
+    - name: Restart server on Raspberry Pi
+      shell: powershell
       run: |
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 pi@<your-pi-ip> \
+        ssh -o StrictHostKeyChecking=no -i $env:USERPROFILE\.ssh\id_ed25519 pi@100.101.255.110 `
           "sudo systemctl restart pi-server"
