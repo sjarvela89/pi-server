@@ -43,7 +43,7 @@ jobs:
     - name: Deploy files using robocopy
       shell: powershell
       run: |
-        robocopy "$env:GITHUB_WORKSPACE" Z:\ /MIR /XD .git .github
+        robocopy "$env:GITHUB_WORKSPACE" Y:\ /MIR /XD .git .github
 
     - name: Restart server on Raspberry Pi
       shell: powershell
