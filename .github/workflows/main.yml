@@ -20,22 +20,26 @@ jobs:
         echo "Trying icacls version..."
         icacls /?
 
-    - name: Set up SSH key
+    - name: Set up SSH key in Windows workspace
       shell: powershell
       run: |
         $sshPath = "$env:GITHUB_WORKSPACE\.ssh"
         mkdir $sshPath -Force
         Set-Content -Path "$sshPath\id_ed25519" -Value "${{ secrets.SSH_PRIVATE_KEY }}" -NoNewline
-        # Optionally set permissions in Windows to be restrictive
         icacls $sshPath\id_ed25519 /inheritance:r
         icacls $sshPath\id_ed25519 /grant:r "$($env:USERNAME):(R)"
+
+    - name: Copy SSH key to WSL and fix permissions
+      shell: powershell
+      run: |
+        wsl bash -c "mkdir -p ~/.ssh && cp /mnt/c/actions-runner/_work/pi-server/pi-server/.ssh/id_ed25519 ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519"
 
     - name: Deploy files with rsync
       shell: powershell
       run: |
-        wsl rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no -i /mnt/c/actions-runner/_work/pi-server/pi-server/.ssh/id_ed25519" ./ pi@100.101.255.110:/home/pi/pi-server/
+        wsl rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519" ./ pi@100.101.255.110:/home/pi/pi-server/
 
     - name: Restart server on Raspberry Pi
       shell: powershell
       run: |
-        wsl ssh -o StrictHostKeyChecking=no -i /mnt/c/actions-runner/_work/pi-server/pi-server/.ssh/id_ed25519 pi@100.101.255.110 "sudo systemctl restart pi-server"
+        wsl ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 pi@100.101.255.110 "sudo systemctl restart pi-server"
