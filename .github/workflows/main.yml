@@ -9,9 +9,6 @@ jobs:
     runs-on: self-hosted
 
     steps:
-    - name: Allow PowerShell script execution (session only)
-      run: Set-ExecutionPolicy RemoteSigned -Scope Process -Force
-      shell: powershell
     - name: Checkout code
       uses: actions/checkout@v3
 
