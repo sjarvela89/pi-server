@@ -49,6 +49,7 @@ jobs:
       shell: powershell
       run: |
         robocopy "$env:GITHUB_WORKSPACE" Y:\ /MIR /XD .git .github
+        continue-on-error: true
 
     - name: Restart server on Raspberry Pi
       shell: powershell
