@@ -10,8 +10,8 @@ jobs:
 
     steps:
     - name: Allow PowerShell script execution (session only)
-      run: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
-      shell: pwsh
+      run: Set-ExecutionPolicy RemoteSigned -Scope Process -Force
+      shell: powershell
     - name: Checkout code
       uses: actions/checkout@v3
 
