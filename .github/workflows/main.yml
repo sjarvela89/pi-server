@@ -38,7 +38,7 @@ jobs:
         icacls $sshPath\id_ed25519 /inheritance:r
         icacls $sshPath\id_ed25519 /grant:r "$($env:USERNAME):(R)"
 
-    - name: Copy SSH key to WSL and fix permissions
+    - name: Copy SSH key to WSL and fix permissions 1
       shell: powershell
       run: |
         wsl bash -c "mkdir -p ~/.ssh && cp /mnt/c/actions-runner/.ssh/id_ed25519 ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519"
