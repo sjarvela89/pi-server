@@ -25,7 +25,7 @@ jobs:
       run: |
         mkdir $env:USERPROFILE\.ssh -Force
         Set-Content -Path $env:USERPROFILE\.ssh\id_ed25519 -Value "${{ secrets.SSH_PRIVATE_KEY }}" -NoNewline
-        & icacls "$env:USERPROFILE\.ssh\id_ed25519" /inheritance:r /grant "$env:USERNAME:F"
+        & icacls "$env:USERPROFILE\.ssh\id_ed25519" /inheritance:r /grant "sjarv:F"
 
     - name: Deploy files with rsync
       shell: powershell
