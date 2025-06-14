@@ -38,7 +38,7 @@ jobs:
     - name: Map network drive to Raspberry Pi
       shell: powershell
       run: |
-        net use Z: \\100.101.255.110\pi-server /user:sjarv ${{ secrets.PI_SMB_PASSWORD }}
+        net use Y: \\100.101.255.110\pi-server /user:sjarv ${{ secrets.PI_SMB_PASSWORD }}
 
     - name: Deploy files using robocopy
       shell: powershell
