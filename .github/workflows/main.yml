@@ -51,7 +51,3 @@ jobs:
         robocopy "$env:GITHUB_WORKSPACE" Y:\ /MIR /XD .git .github
       continue-on-error: true
 
-    - name: Restart server on Raspberry Pi
-      shell: powershell
-      run: |
-        wsl ssh -o StrictHostKeyChecking=no -i /mnt/c/actions-runner/.ssh/id_ed25519 sjarv@100.101.255.110 "sudo systemctl restart pi-server"
