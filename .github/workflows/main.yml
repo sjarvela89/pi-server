@@ -20,17 +20,17 @@ jobs:
         echo "Trying icacls version..."
         icacls /?
 
-    - name: Set up SSH key (Windows compatible)
+    - name: Set up SSH key
       shell: powershell
       run: |
-        mkdir $env:USERPROFILE\.ssh -Force
-        Set-Content -Path $env:USERPROFILE\.ssh\id_ed25519 -Value "${{ secrets.SSH_PRIVATE_KEY }}" -NoNewline
-        & icacls "$env:USERPROFILE\.ssh\id_ed25519" /inheritance:r /grant "sjarv:F"
+        $keyPath = "$env:GITHUB_WORKSPACE\.ssh"
+        mkdir $keyPath -Force
+        Set-Content -Path "$keyPath\id_ed25519" -Value "${{ secrets.SSH_PRIVATE_KEY }}" -NoNewline
 
     - name: Deploy files with rsync
       shell: powershell
       run: |
-        wsl rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no -i /mnt/c/Users/sjarv/.ssh/id_ed25519" ./ pi@100.101.255.110:/home/pi/pi-server/
+       wsl rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no -i /mnt/c/Users/sjarv/workspace/.ssh/id_ed25519" ./ pi@100.101.255.110:/home/pi/pi-server/
 
     - name: Restart server on Raspberry Pi
       shell: powershell
