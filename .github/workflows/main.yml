@@ -30,7 +30,7 @@ jobs:
     - name: Deploy files with rsync
       shell: powershell
       run: |
-        wsl rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519" ./ pi@100.101.255.110:/home/pi/pi-server/
+        wsl rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no -i /mnt/c/Users/sjarv/.ssh/id_ed25519" ./ pi@100.101.255.110:/home/pi/pi-server/
 
     - name: Restart server on Raspberry Pi
       shell: powershell
