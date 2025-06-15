@@ -1,0 +1,53 @@
+name: Deploy to Raspberry Pi (No Git used)
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+    - name: Clean SSH key before checkout
+      shell: powershell
+      run: |
+        $sshPath = "C:\actions-runner\.ssh"
+        $keyFile = Join-Path $sshPath "id_ed25519"
+        if (Test-Path $keyFile) {
+          Remove-Item $keyFile -Force -ErrorAction SilentlyContinue
+        }
+
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Debug environment
+      shell: powershell
+      run: |
+        echo "USERNAME: $env:USERNAME"
+        echo "USERPROFILE: $env:USERPROFILE"
+        echo "Trying icacls version..."
+        icacls /?
+
+
+    - name: Copy SSH key to WSL and fix permissions 1
+      shell: powershell
+      run: |
+        wsl bash -c "mkdir -p ~/.ssh && cp /mnt/c/actions-runner/.ssh/id_ed25519 ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519"
+
+    - name: Disconnect mapped drive if exists
+      shell: powershell
+      run: |
+        net use Y: /delete /y
+
+    - name: Map network drive to Raspberry Pi
+      shell: powershell
+      run: |
+        net use Y: \\100.101.255.110\pi-server /user:sjarv ${{ secrets.PI_SMB_PASSWORD }}
+
+    - name: Deploy files using robocopy
+      shell: powershell
+      run: |
+        robocopy "$env:GITHUB_WORKSPACE" Y:\ /MIR /XD .git .github
+      continue-on-error: true
+
