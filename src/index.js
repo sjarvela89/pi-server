@@ -9,6 +9,7 @@ const path = require('path');
 const authRoutes = require('./routes/auth.routes');
 const messageRoutes = require('./routes/messages.routes');
 const deviceRoutes = require('./routes/device.routes');
+const youtubeRoutes = require('./routes/youtube.routes');
 const { connectToDatabase } = require('./config');
 
 dotenv.config();
@@ -41,6 +42,7 @@ app.get('/', function (_req, res) {
 app.use(authRoutes);
 app.use(messageRoutes);
 app.use(deviceRoutes);
+app.use(youtubeRoutes);
 
 // Start HTTPS server
 https.createServer(httpsOptions, app).listen(PORT, '0.0.0.0', function () {
